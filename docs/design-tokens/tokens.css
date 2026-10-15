@@ -1,0 +1,134 @@
+/* Loog design tokens. Generated from tokens.json. Light is the base, dark overrides.
+   Theme setting: Auto (no data-theme attribute, follows the system), Light (data-theme="light"), Dark (data-theme="dark") on <html>. */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-label: 12px;
+  --space-3: 16px;
+  --gutter: 24px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --radius-xs: 2px;
+  --radius-chip: 8px;
+  --radius-sm: 10px;
+  --radius-control: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 999px;
+  --tap-min: 44px;
+  --control-h: 56px;
+  --tabbar-h: 88px;
+  --icon: 24px;
+  --font-sans: "Lexend Deca", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --bg: #ebebef;
+  --surface: #f8f8fa;
+  --surface-raised: #efeff2;
+  --edge: rgba(10, 10, 11, 0.06);
+  --line-strong: #8e8e96;
+  --ink: #0a0a0b;
+  --ink-muted: #5f5a5c;
+  --ink-disabled: #a8a8b0;
+  --pink: #e901c4;
+  --on-pink: #000000;
+  --pink-text: #b8009a;
+  --pink-tint: #f7a8e6;
+  --pink-soft: #fde3f7;
+  --green: #3bf07f;
+  --on-green: #000000;
+  --green-text: #127a3a;
+  --green-soft: #ddfbe8;
+  --danger: #d0142c;
+  --focus: #0a0a0b;
+  --scrim: rgba(10, 10, 11, 0.45);
+  --shadow-bevel: inset 0 2px 0 #ffffff, inset 0 -2px 0 rgba(10, 10, 11, 0.04);
+  --shadow-button: inset 0 2px 0 #ffffff, inset 0 -2px 0 rgba(10, 10, 11, 0.08);
+  --shadow-bevel-accent: inset 0 2px 0 rgba(255, 255, 255, 0.75), inset 0 -2px 0 rgba(0, 0, 0, 0.32);
+  --shadow-pill: inset 0 1px 0 #ffffff, inset 0 -1px 0 rgba(10, 10, 11, 0.08);
+  --shadow-pill-accent: inset 0 1px 0 rgba(255, 255, 255, 0.75), inset 0 -1px 0 rgba(0, 0, 0, 0.32);
+  --shadow-nav: inset 0 2px 0 rgba(255, 255, 255, 0.9), inset 0 -2px 0 rgba(10, 10, 11, 0.08);
+  --shadow-inset: inset 0 1px 0 #ffffff, inset 0 -1px 0 rgba(10, 10, 11, 0.08);
+  --shadow-lift: 0 16px 40px rgba(10, 10, 11, 0.16);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f0a0c;
+    --surface: #141414;
+    --surface-raised: #1c1c1c;
+    --edge: rgba(255, 255, 255, 0.07);
+    --line-strong: #7a7180;
+    --ink: #ffffff;
+    --ink-muted: #a6a1a3;
+    --ink-disabled: #524a58;
+    --pink: #e901c4;
+    --on-pink: #000000;
+    --pink-text: #ff4fdb;
+    --pink-tint: #f7a8e6;
+    --pink-soft: #3e192b;
+    --green: #3bf07f;
+    --on-green: #000000;
+    --green-text: #3bf07f;
+    --green-soft: #0e2616;
+    --danger: #ff5a5f;
+    --focus: #ffffff;
+    --scrim: rgba(0, 0, 0, 0.72);
+    --shadow-bevel: inset 0 2px 0 rgba(255, 255, 255, 0.08);
+    --shadow-button: inset 0 2px 0 rgba(255, 255, 255, 0.08), inset 0 -2px 0 rgba(0, 0, 0, 0.35);
+    --shadow-bevel-accent: inset 0 2px 0 rgba(255, 255, 255, 0.75), inset 0 -2px 0 rgba(0, 0, 0, 0.32);
+    --shadow-pill: inset 0 1px 0 rgba(255, 255, 255, 0.10), inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+    --shadow-pill-accent: inset 0 1px 0 rgba(255, 255, 255, 0.75), inset 0 -1px 0 rgba(0, 0, 0, 0.32);
+    --shadow-nav: inset 0 2px 0 rgba(255, 255, 255, 0.12), inset 0 -2px 0 rgba(0, 0, 0, 0.35);
+    --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.10), inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+    --shadow-lift: 0 16px 40px rgba(0, 0, 0, 0.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f0a0c;
+  --surface: #141414;
+  --surface-raised: #1c1c1c;
+  --edge: rgba(255, 255, 255, 0.07);
+  --line-strong: #7a7180;
+  --ink: #ffffff;
+  --ink-muted: #a6a1a3;
+  --ink-disabled: #524a58;
+  --pink: #e901c4;
+  --on-pink: #000000;
+  --pink-text: #ff4fdb;
+  --pink-tint: #f7a8e6;
+  --pink-soft: #3e192b;
+  --green: #3bf07f;
+  --on-green: #000000;
+  --green-text: #3bf07f;
+  --green-soft: #0e2616;
+  --danger: #ff5a5f;
+  --focus: #ffffff;
+  --scrim: rgba(0, 0, 0, 0.72);
+  --shadow-bevel: inset 0 2px 0 rgba(255, 255, 255, 0.08);
+  --shadow-button: inset 0 2px 0 rgba(255, 255, 255, 0.08), inset 0 -2px 0 rgba(0, 0, 0, 0.35);
+  --shadow-bevel-accent: inset 0 2px 0 rgba(255, 255, 255, 0.75), inset 0 -2px 0 rgba(0, 0, 0, 0.32);
+  --shadow-pill: inset 0 1px 0 rgba(255, 255, 255, 0.10), inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+  --shadow-pill-accent: inset 0 1px 0 rgba(255, 255, 255, 0.75), inset 0 -1px 0 rgba(0, 0, 0, 0.32);
+  --shadow-nav: inset 0 2px 0 rgba(255, 255, 255, 0.12), inset 0 -2px 0 rgba(0, 0, 0, 0.35);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.10), inset 0 -1px 0 rgba(0, 0, 0, 0.35);
+  --shadow-lift: 0 16px 40px rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+
+/* Type scale as used in the hi-fi screens (weight is ALWAYS 400) */
+.t-screen-title { font: 400 34px/40px var(--font-sans); letter-spacing: -0.05em; } /* Screen titles, Home greeting */
+.t-screen-title-long { font: 400 28px/34px var(--font-sans); letter-spacing: -0.05em; } /* Sub-screen titles longer than 13 characters */
+.t-display { font: 400 36px/40px var(--font-sans); letter-spacing: -0.06em; } /* Workout name in the Suggested / In progress card */
+.t-stat { font: 400 32px/36px var(--font-sans); letter-spacing: -0.06em; } /* Time and Volume values; year count uses 32/32 */
+.t-heading { font: 400 24px/30px var(--font-sans); letter-spacing: -0.03em; } /* Current exercise name, empty-state title, dialog and sheet title, Heaviest value */
+.t-number { font: 400 20px/26px var(--font-sans); letter-spacing: -0.02em; } /* Stepper and number-field values */
+.t-title { font: 400 18px/24px var(--font-sans); letter-spacing: -0.02em; } /* Card and row titles */
+.t-button { font: 400 17px/24px var(--font-sans); letter-spacing: -0.01em; } /* Every button label */
+.t-body { font: 400 16px/22px var(--font-sans); letter-spacing: 0; } /* Body text, inputs, Notes */
+.t-segment { font: 400 15px/20px var(--font-sans); letter-spacing: 0; } /* Segmented control options */
+.t-subtitle-lg { font: 400 14px/20px var(--font-sans); letter-spacing: 0; } /* Card subtitle ("Last done 9 days ago"), date under a screen title */
+.t-label { font: 400 13px/18px var(--font-sans); letter-spacing: 0; } /* Section labels, column headers, captions */
+.t-row-sub { font: 400 13px/16px var(--font-sans); letter-spacing: 0; } /* Row subtitles */
+.t-small { font: 400 12px/16px var(--font-sans); letter-spacing: 0; } /* Chips, badges, tab labels, chart labels */
+.t-micro { font: 400 11px/14px var(--font-sans); letter-spacing: 0; } /* Year-grid month labels */
