@@ -25,6 +25,13 @@ Mike's testing feedback. Where an item differs from `loog-handoff.md`, this file
 
 Not changed: Swap for another exercise stays session-only. Discarding a workout does not undo an exercise you added to it.
 
+## Round 3 (18 november 2026)
+
+| # | Feedback | What changed | Handoff section it overrides |
+|---|---|---|---|
+| 12 | A more specific muscle group list | Chest, Lats, Upper back, Lower back, Front delts, Side delts, Rear delts, Biceps, Triceps, Forearms, Quads, Hamstrings, Glutes, Adductors, Abductors, Calves, Core, Full body, Other. Exercises saved with an older value keep it as an option. | 13, question 4 |
+| 13 | Naming rule | The exercise name leaves out the equipment ("Bench Press" + Barbell), except cable exercises, which keep "Cable" in the name. | 4.3.6 |
+
 ## Still open (TODO(Mike) in code)
 
 All questions from section 13 of the handoff that were not answered, plus: the first-time weight carry-down only fills empty sets, so after a progression (last time 70, now 72,5) each set is changed on its own.

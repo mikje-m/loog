@@ -255,8 +255,13 @@ export function AddToWorkout() {
 
 // ---- Create / edit exercise (4.3.6) -------------------------------------------------------------------------
 
-// TODO(Mike): open question 4 — the Muscle group and Equipment lists are not defined yet.
-export const MUSCLE_GROUPS = ['Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Legs', 'Glutes', 'Calves', 'Core', 'Full body', 'Other'];
+// Open question 4, decided by Mike (feedback round 3): a specific muscle list. Equipment stays as it was.
+// Naming rule: the exercise name leaves out the equipment ("Bench Press" + Barbell), except cable exercises,
+// which keep "Cable" in the name ("Cable Lateral Raise" next to the dumbbell "Lateral Raise").
+export const MUSCLE_GROUPS = [
+  'Chest', 'Lats', 'Upper back', 'Lower back', 'Front delts', 'Side delts', 'Rear delts', 'Biceps', 'Triceps', 'Forearms',
+  'Quads', 'Hamstrings', 'Glutes', 'Adductors', 'Abductors', 'Calves', 'Core', 'Full body', 'Other',
+];
 export const EQUIPMENT = ['Barbell', 'Dumbbell', 'Machine', 'Cable', 'Bodyweight', 'Kettlebell', 'Band', 'Other'];
 
 export function ExerciseForm() {
@@ -298,7 +303,9 @@ export function ExerciseForm() {
 
   const impact = existing ? exerciseImpact(d, existing.id) : { sessions: 0, prs: 0 };
   const unitHint = d.settings.units === 'kg_kmh' ? 'Logged in minutes and km/h' : 'Logged in minutes and mph';
-  const options = (xs: string[]) => xs.map((x) => ({ value: x, label: x }));
+  // An exercise saved with a value from an older list (e.g. "Legs") keeps it as an option, so editing never drops it.
+  const options = (xs: string[], current: string) =>
+    (current && !xs.includes(current) ? [...xs, current] : xs).map((x) => ({ value: x, label: x }));
 
   return (
     <>
@@ -317,9 +324,9 @@ export function ExerciseForm() {
         ) : (
           <>
             <Label htmlFor="ex-muscle" spaced>Muscle group</Label>
-            <SelectField id="ex-muscle" value={muscle} onChange={setMuscle} placeholder="Choose a muscle group" options={options(MUSCLE_GROUPS)} />
+            <SelectField id="ex-muscle" value={muscle} onChange={setMuscle} placeholder="Choose a muscle group" options={options(MUSCLE_GROUPS, muscle)} />
             <Label htmlFor="ex-equipment" spaced>Equipment</Label>
-            <SelectField id="ex-equipment" value={equipment} onChange={setEquipment} placeholder="Choose equipment" options={options(EQUIPMENT)} />
+            <SelectField id="ex-equipment" value={equipment} onChange={setEquipment} placeholder="Choose equipment" options={options(EQUIPMENT, equipment)} />
           </>
         )}
       </Main>
