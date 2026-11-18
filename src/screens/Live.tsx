@@ -201,7 +201,7 @@ export function LiveSession() {
           <SheetAction onClick={() => nav(`/session/swap/${cur.id}`)}>Swap for another exercise</SheetAction>
           <SheetAction onClick={() => nav('/session/reorder')}>Reorder exercises</SheetAction>
           <SheetAction onClick={() => { skipExercise(cur.id); setSheet(false); }}>Skip this exercise</SheetAction>
-          <SheetAction danger onClick={() => { removeFromSession(cur.id); setSheet(false); }}>Remove from session</SheetAction>
+          <SheetAction danger onClick={() => { removeFromSession(cur.id); setSheet(false); }}>Remove from workout</SheetAction>
         </Sheet>
       )}
       {discardDialog}

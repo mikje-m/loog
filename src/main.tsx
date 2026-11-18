@@ -5,9 +5,11 @@ import './styles/tokens.css';
 import './styles/app.css';
 import App from './App';
 import { applyTheme, getData, importJSON, loadData } from './store';
+import { Capacitor } from '@capacitor/core';
 import { registerSW } from 'virtual:pwa-register';
 
-registerSW({ immediate: true });
+// The service worker is for the web version; the Android app already ships all files inside itself.
+if (!Capacitor.isNativePlatform()) registerSW({ immediate: true });
 void loadData();
 
 // Development only: lets tests load a backup without the file picker.

@@ -2,6 +2,7 @@
 // written straight away, so a dead battery never costs an exercise (handoff 8.4).
 import Dexie, { type Table } from 'dexie';
 import { produce } from 'immer';
+import { Capacitor, SystemBars, SystemBarsStyle } from '@capacitor/core';
 import { useSyncExternalStore } from 'react';
 import type {
   AppData, Exercise, Goal, LoggedExercise, PlannedSet, SetEntry, SetField, Session, Settings, Theme, Units, Workout,
@@ -50,6 +51,11 @@ export function applyTheme(theme: Theme) {
   }
   const bg = getComputedStyle(root).getPropertyValue('--bg').trim();
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bg || '#0f0a0c');
+  // In the Android app the status and navigation bar icons follow the theme (light icons on dark, dark on light).
+  if (Capacitor.isNativePlatform()) {
+    const dark = theme === 'dark' || (theme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+    void SystemBars.setStyle({ style: dark ? SystemBarsStyle.Dark : SystemBarsStyle.Light }).catch(() => {});
+  }
 }
 
 // ---- Persistence ----------------------------------------------------------------------
@@ -374,6 +380,12 @@ export const logExercise = (loggedId: string) =>
     if (!e.sets.every((set) => isComplete(set, cardio))) return;
     e.state = 'logged';
     for (const set of e.sets) set.completed = true;
+    // An exercise added mid-workout becomes a target in the workout: what you did this time is the plan next time.
+    if (e.newItem && e.itemId) {
+      const item = (s.workoutId ? workoutById(d, s.workoutId) : undefined)?.items.find((i) => i.id === e.itemId);
+      if (item) item.sets = plannedFrom(e.sets, cardio);
+      e.newItem = undefined;
+    }
     s.currentId = (firstTodo(s) ?? e).id;
   });
 
@@ -385,11 +397,14 @@ export const skipExercise = (loggedId: string) =>
     s.currentId = (firstTodo(s) ?? e).id;
   });
 
+/** Remove an exercise. It also leaves the workout, so the structure stays the way you trained. */
 export const removeFromSession = (loggedId: string) =>
-  mutateLive((s) => {
+  mutateLive((s, d) => {
     const idx = s.exercises.findIndex((x) => x.id === loggedId);
     if (idx < 0) return;
-    s.exercises.splice(idx, 1);
+    const [gone] = s.exercises.splice(idx, 1);
+    const wk = s.workoutId ? workoutById(d, s.workoutId) : undefined;
+    if (wk && gone.itemId) wk.items = wk.items.filter((i) => i.id !== gone.itemId);
     if (s.currentId === loggedId) s.currentId = (firstTodo(s) ?? s.exercises[Math.min(idx, s.exercises.length - 1)])?.id;
   });
 
@@ -404,12 +419,26 @@ export const swapExercise = (loggedId: string, exerciseId: string) =>
     e.sets = seedSets(d, ex, undefined, e.sets.length);
   });
 
-/** Session-only: not added to the workout (5.3 rule 5). One set row. */
+/** The workout's planned sets for an exercise, taken from sets that were done. */
+const plannedFrom = (sets: SetEntry[], cardio: boolean): PlannedSet[] =>
+  cardio ? [{ duration: sets[0]?.duration, speed: sets[0]?.speed }] : sets.map((x) => ({ reps: x.reps }));
+
+/**
+ * Add an exercise mid-workout. It joins the workout too (end of the list), so the structure follows how
+ * you actually train. One set row to start; its targets are set from what you do when you log it.
+ */
 export const addToSession = (exerciseId: string) =>
   mutateLive((s, d) => {
     const ex = exerciseById(d, exerciseId);
     if (!ex) return;
-    const e: LoggedExercise = { id: uid(), exerciseId: ex.id, state: 'todo', sets: seedSets(d, ex, undefined, 1) };
+    const wk = s.workoutId ? workoutById(d, s.workoutId) : undefined;
+    const sets = seedSets(d, ex, undefined, 1);
+    const e: LoggedExercise = { id: uid(), exerciseId: ex.id, state: 'todo', sets };
+    if (wk) {
+      e.itemId = uid();
+      e.newItem = true;
+      wk.items.push({ id: e.itemId, exerciseId: ex.id, sets: plannedFrom(sets, ex.isCardio) });
+    }
     s.exercises.push(e);
     s.currentId = e.id;
   });

@@ -15,6 +15,16 @@ Mike's testing feedback. Where an item differs from `loog-handoff.md`, this file
 | 7 | Does the Android / Samsung back button work? | Back closes an open dialog or sheet first. In the live session Back opens the Discard dialog, like the X. Everywhere else it goes back one screen. | 4.0 (not specified) |
 | 8 | Text selection colour | Selected text is the primary pink with black text. In number fields the highlight fills the whole field height. | 2.1 |
 
+## Round 2 (18 november 2026)
+
+| # | Feedback | What changed | Handoff section it overrides |
+|---|---|---|---|
+| 9 | An exercise added mid-workout should update the workout | It joins the workout (end of the list). When you log it, the sets and reps you did become its targets. | 4.4.3, 5.3 rule 5 |
+| 10 | Deleting or reordering mid-workout should change the structure | Reordering already did. "Remove from session" is now **"Remove from workout"** and removes the exercise from the workout as well. Skip does not change the workout. | 4.4.4, 5.3 rule 5 |
+| 11 | Easy install, more robust than a web app | Android app (APK), package `com.mikje.loog`. Same code and the same database engine as the web version, stored in the app's own private storage. | 8.2 |
+
+Not changed: Swap for another exercise stays session-only. Discarding a workout does not undo an exercise you added to it.
+
 ## Still open (TODO(Mike) in code)
 
 All questions from section 13 of the handoff that were not answered, plus: the first-time weight carry-down only fills empty sets, so after a progression (last time 70, now 72,5) each set is changed on its own.

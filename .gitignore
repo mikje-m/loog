@@ -2,3 +2,8 @@ node_modules
 dist
 dev-dist
 *.local
+android/local.properties
+android/.gradle
+android/build
+android/app/build
+android/capacitor-cordova-android-plugins/build

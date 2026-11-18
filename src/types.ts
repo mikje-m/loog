@@ -61,8 +61,10 @@ export type LoggedState = 'todo' | 'logged' | 'skipped';
 export interface LoggedExercise {
   id: string;
   exerciseId: string;
-  /** The workout item this came from. Absent for exercises added during the session. */
+  /** The workout item this belongs to (exercises added mid-session get a new item). Absent when the session has no workout. */
   itemId?: string;
+  /** Added mid-session: its targets are filled in from what was actually done when it is logged. */
+  newItem?: true;
   state: LoggedState;
   sets: SetEntry[];
 }
