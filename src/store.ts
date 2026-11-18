@@ -345,8 +345,15 @@ export function applyPatch(set: SetEntry, patch: Partial<Record<SetField, number
 
 export const updateSet = (loggedId: string, setId: string, patch: Partial<Record<SetField, number | undefined>>) =>
   mutateLive((s) => {
-    const set = s.exercises.find((e) => e.id === loggedId)?.sets.find((x) => x.id === setId);
-    if (set) applyPatch(set, patch);
+    const sets = s.exercises.find((e) => e.id === loggedId)?.sets ?? [];
+    const idx = sets.findIndex((x) => x.id === setId);
+    if (idx < 0) return;
+    applyPatch(sets[idx], patch);
+    // First time logging: you almost always lift the same weight every set, so the sets below that
+    // are still empty take it over as a grey suggestion. Change any of them if you like.
+    if (patch.weight != null) {
+      for (const next of sets.slice(idx + 1)) if (next.weight == null) next.weight = patch.weight;
+    }
   });
 
 /** Add a row copying the last row's values as grey suggestions *(assumed)*. */

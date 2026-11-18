@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Navigate, useBlocker, useNavigate, useParams } from 'react-router-dom';
 import {
   addSet, addToSession, completeWorkout, discardSession, logExercise, removeFromSession, reorderTodo, setCurrent, setNotes, skipExercise,
   swapExercise, updateSet, useData,
@@ -9,7 +9,7 @@ import {
   sessionDuration, sessionName, sessionVolume, todoText, topWeight,
 } from '../calc';
 import {
-  dateLong, dayMonthShort, duration, fixed1, fromDisplaySpeed, fromDisplayWeight, num, speedHeader, speedStep, timeRange, toDisplaySpeed,
+  facts, dateLong, dayMonthShort, duration, fixed1, fromDisplaySpeed, fromDisplayWeight, num, speedHeader, speedStep, timeRange, toDisplaySpeed,
   toDisplayWeight, volume, w, weightStep, weightUnit, wu,
 } from '../format';
 import type { AppData, LoggedExercise, Session } from '../types';
@@ -33,6 +33,22 @@ export function LiveSession() {
   const [expanded, setExpanded] = useState<string | null>(null);
   // Set while we leave on purpose, so the "no open session" redirect does not race our own navigation.
   const leaving = useRef(false);
+
+  // The only ways out are Workout completed or the X (handoff 4.0). The system Back button (Android back,
+  // Samsung back gesture) therefore opens the Discard dialog instead of leaving.
+  // TODO(Mike): Back is not specified in the handoff; this treats it like the X.
+  const modalOpen = sheet || discard;
+  const blocker = useBlocker(
+    ({ historyAction, nextLocation }) =>
+      historyAction === 'POP' && !leaving.current && !modalOpen && !nextLocation.pathname.startsWith('/session'),
+  );
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      blocker.reset();
+      setDiscard(true);
+    }
+  }, [blocker]);
+
   const s = openSession(d);
   if (!s) return leaving.current ? null : <Navigate to="/" replace />;
 
@@ -347,7 +363,7 @@ export function FinishSummary() {
                 <span className="pr__title">New PR</span>
                 {prs.map((p) => (
                   <span key={`${p.exerciseId}${p.type}`} className="pr__detail">
-                    {exerciseById(d, p.exerciseId)?.name} · {p.type === 'heaviest' ? wu(p.value, u) : `${p.value} reps`}
+                    {facts(exerciseById(d, p.exerciseId)?.name, p.type === 'heaviest' ? wu(p.value, u) : `${p.value} reps`)}
                   </span>
                 ))}
               </div>

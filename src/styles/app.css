@@ -18,7 +18,10 @@ button, input, select, textarea { font: inherit; font-weight: 400; color: inheri
 button { border: 0; background: none; padding: 0; margin: 0; cursor: pointer; text-align: inherit; }
 a { color: inherit; text-decoration: none; }
 h1, h2, p { margin: 0; font-weight: 400; }
-::selection { background: var(--pink-soft); color: var(--ink); }
+/* Selected text: the primary pink with black text. Single-line fields get a line-height equal to
+   their height, so the highlight fills the whole field instead of a thin strip. */
+::selection { background: var(--pink); color: var(--on-pink); }
+:root { --ring-track: color-mix(in srgb, var(--ink-muted) 40%, transparent); }
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 svg { flex-shrink: 0; display: block; }
 
@@ -134,7 +137,7 @@ button.ft-row:active, a.ft-row:active, .ft-row__main:active { background: var(--
   background: var(--surface-raised); box-shadow: var(--shadow-inset); color: var(--ink); width: 100%;
 }
 .ft-field input, .ft-field select, .ft-field textarea {
-  flex: 1 1 auto; min-width: 0; border: 0; background: transparent; outline: none; color: var(--ink); font-size: 16px; line-height: 22px; padding: 0; height: 54px;
+  flex: 1 1 auto; min-width: 0; border: 0; background: transparent; outline: none; color: var(--ink); font-size: 16px; line-height: 54px; padding: 0; height: 54px;
 }
 .ft-field input::placeholder, .ft-field textarea::placeholder { color: var(--ink-muted); opacity: 1; }
 .ft-field:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
@@ -143,18 +146,19 @@ button.ft-row:active, a.ft-row:active, .ft-row__main:active { background: var(--
 .ft-field select option { color: var(--ink); background: var(--surface); }
 .ft-field__trail { color: var(--ink-muted); display: flex; pointer-events: none; }
 .ft-field--notes { align-items: flex-start; min-height: 80px; padding-top: 16px; padding-bottom: 12px; }
+.ft-field textarea { line-height: 22px; }
 .ft-field--notes textarea { height: auto; min-height: 52px; resize: none; overflow: hidden; }
 .ft-field__overlay { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
 .ft-field__value { flex: 1 1 auto; min-width: 0; }
 .ft-field__value.is-placeholder { color: var(--ink-muted); }
-.ft-num { height: 56px; border-radius: var(--radius-md); background: var(--surface-raised); box-shadow: var(--shadow-inset); text-align: center; font-size: 20px; line-height: 26px; color: var(--ink); border: 0; width: 100%; min-width: 0; outline: none; padding: 0; }
+.ft-num { height: 56px; border-radius: var(--radius-md); background: var(--surface-raised); box-shadow: var(--shadow-inset); text-align: center; font-size: 20px; line-height: 56px; color: var(--ink); border: 0; width: 100%; min-width: 0; outline: none; padding: 0; }
 .ft-num:focus-visible { outline: 2px solid var(--focus); }
 
 /* ---- Stepper (3.9) ---- */
 .ft-stepper { min-width: 0; height: 56px; padding: 6px 2px; display: flex; align-items: center; border-radius: var(--radius-md); background: var(--surface-raised); box-shadow: var(--shadow-inset); }
 .ft-stepper__btn { width: 44px; height: 44px; flex-shrink: 0; border-radius: var(--radius-control); color: var(--ink); display: flex; align-items: center; justify-content: center; }
 .ft-stepper__btn:active { background: var(--surface); }
-.ft-stepper__val { flex: 1 1 auto; min-width: 0; width: 100%; text-align: center; font-size: 20px; line-height: 26px; letter-spacing: -0.02em; color: var(--ink); background: transparent; border: 0; outline: none; padding: 0; height: 44px; border-radius: var(--radius-control); }
+.ft-stepper__val { flex: 1 1 auto; min-width: 0; width: 100%; text-align: center; font-size: 20px; line-height: 44px; letter-spacing: -0.02em; color: var(--ink); background: transparent; border: 0; outline: none; padding: 0; height: 44px; line-height: 44px; border-radius: var(--radius-control); }
 .ft-stepper__val.is-suggested { color: var(--ink-muted); }
 .ft-stepper__val::placeholder { color: var(--ink-muted); opacity: 1; }
 .ft-stepper__val:focus-visible { outline: 2px solid var(--focus); }

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, RouterProvider, Routes, createHashRouter, useLocation } from 'react-router-dom';
 import { useReady } from './store';
 import { TabBar } from './ui/components';
 import Home from './screens/Home';
@@ -52,12 +52,11 @@ function Shell() {
   );
 }
 
+// A data router (instead of <HashRouter>) so screens can intercept the system Back button.
+const router = createHashRouter([{ path: '*', element: <Shell /> }]);
+
 export default function App() {
   const ready = useReady();
   if (!ready) return null;
-  return (
-    <HashRouter>
-      <Shell />
-    </HashRouter>
-  );
+  return <RouterProvider router={router} />;
 }

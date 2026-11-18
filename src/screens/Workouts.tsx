@@ -6,7 +6,7 @@ import {
 } from '../store';
 import { exerciseById, exerciseImpact, lastPerformed, openSession, sortedWorkouts, targetsText, workoutById } from '../calc';
 import {
-  agoShort, fixed1, fromDisplaySpeed, num, plural, speedStep, speedUnit, toDisplaySpeed,
+  agoShort, facts, fixed1, fromDisplaySpeed, num, plural, speedStep, speedUnit, toDisplaySpeed,
 } from '../format';
 import type { PlannedSet } from '../types';
 import { Icon } from '../ui/Icon';
@@ -56,7 +56,7 @@ export function WorkoutList() {
               return (
                 <Row
                   pick lead={handle} title={x.name} to={`/workouts/${x.id}`} className={lifted ? 'ft-row--lifted' : ''}
-                  sub={t != null ? `${exercisesCount(x.items.length)} · ${agoShort(t)}` : exercisesCount(x.items.length)}
+                  sub={t != null ? facts(exercisesCount(x.items.length), agoShort(t)) : exercisesCount(x.items.length)}
                   trail={<PlayButton label={`Start ${x.name}`} onClick={() => start(x.id)} />}
                 />
               );
@@ -231,7 +231,7 @@ export function ExercisePicker({ back, newTo, onPick }: { back: string; newTo: s
             {list.map((e) => (
               <Row
                 key={e.id} title={e.name} chevron onClick={() => onPick(e.id)}
-                sub={e.isCardio ? 'Cardio' : [e.muscleGroup, e.equipment].filter(Boolean).join(' · ')}
+                sub={e.isCardio ? 'Cardio' : facts(e.muscleGroup, e.equipment)}
               />
             ))}
           </ListCard>

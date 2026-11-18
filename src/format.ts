@@ -159,4 +159,10 @@ export const uid = () =>
     ? crypto.randomUUID()
     : Math.random().toString(36).slice(2) + Date.now().toString(36);
 
-export const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+/** Between facts: whitespace only, no middle dots. Reads like "Sat 12 sep  52 min". */
+export const SEP = ' ';
+export const facts = (...parts: (string | undefined | false | null)[]) => parts.filter(Boolean).join(SEP);
+/** Rep lists read like in the gym: "12-10-8". */
+export const repList = (reps: number[]) => reps.join('-');
+
+export const plural =(n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;

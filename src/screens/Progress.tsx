@@ -2,7 +2,7 @@ import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { deleteGoal, saveGoal, useData } from '../store';
 import { chartBars, exerciseById, finishedDesc, goalById, goalCurrent, goalProgress, heaviestFor, type Period } from '../calc';
-import { dayMonth, dayMonthShort, dayMonthYear, editNum, fromDisplayWeight, fromIsoDay, goalDate, parseNum, toDisplayWeight, w, weightUnit, wu } from '../format';
+import { dayMonth, dayMonthShort, dayMonthYear, editNum, facts, fromDisplayWeight, fromIsoDay, goalDate, parseNum, toDisplayWeight, w, weightUnit, wu } from '../format';
 import { Icon } from '../ui/Icon';
 import {
   Button, Dialog, EmptyState, Header, IconButton, Label, ListCard, Main, Pinned, PickerField, ProgressBar, Section, SelectField, TextField, TopTabs,
@@ -118,7 +118,7 @@ export function Progress() {
 
         {sel && rows.length > 0 && (
           <>
-            <Section>History of {ex.name} · {sel.title}</Section>
+            <Section>History of {ex.name} - {sel.title}</Section>
             <div className="ft-card">
               {/* TODO(Mike): open question 17 — more sets than fit scroll sideways. */}
               <div className="hist-table">
@@ -181,7 +181,7 @@ export function Goals() {
                     <div className="goal__top">
                       <div className="ft-row__body">
                         <span className="ft-row__title"><span>{name}</span></span>
-                        <span className="ft-row__sub">{wu(g.targetValue, u)} · by {goalDate(fromIsoDay(g.deadline))}</span>
+                        <span className="ft-row__sub">{facts(wu(g.targetValue, u), `by ${goalDate(fromIsoDay(g.deadline))}`)}</span>
                       </div>
                       <IconButton icon="pencil" variant="ghost" label="Edit goal" to={`/goals/${g.id}`} />
                     </div>
@@ -202,7 +202,7 @@ export function Goals() {
                   <div className="goal__top">
                     <div className="ft-row__body">
                       <span className="ft-row__title" style={{ color: 'var(--ink-muted)' }}><span>{exerciseById(d, g.exerciseId)?.name}</span></span>
-                      <span className="ft-row__sub">{wu(g.targetValue, u)} · done {goalDate(g.completedAt!)}</span>
+                      <span className="ft-row__sub">{facts(wu(g.targetValue, u), `done ${goalDate(g.completedAt!)}`)}</span>
                     </div>
                     <span className="goal__done-check"><Icon name="check" size={22} stroke={2.25} /></span>
                   </div>

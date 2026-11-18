@@ -43,7 +43,7 @@ export default function Settings() {
             </div>
             <Segmented<Units>
               label="Units" value={d.settings.units} onChange={setUnits}
-              options={[{ value: 'kg_kmh', label: 'kg · km/h' }, { value: 'lbs_mph', label: 'lbs · mph' }]}
+              options={[{ value: 'kg_kmh', label: 'kg - km/h' }, { value: 'lbs_mph', label: 'lbs - mph' }]}
             />
           </div>
           <div className="set-pref">
@@ -70,7 +70,7 @@ export default function Settings() {
         </div>
         <input ref={file} type="file" accept="application/json,.json" hidden onChange={(e) => onFile(e.target.files?.[0])} />
         {message && <p className="set-footer" role="status">{message}</p>}
-        <p className="set-footer">Loog 1.0 · Your data stays on this device</p>
+        <p className="set-footer">Loog 1.0 - Your data stays on this device</p>
       </Main>
 
       {pending != null && (

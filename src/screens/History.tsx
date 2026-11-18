@@ -3,7 +3,7 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { applyPatch, deleteSession, saveSessionEdit, useData } from '../store';
 import { exerciseById, finishedDesc, prsForSession, sessionById, sessionDuration, sessionName, sessionVolume } from '../calc';
 import {
-  dateLong, dateRow, dayMonth, duration, fixed1, fromDisplaySpeed, fromDisplayWeight, monthLabel, num, plural, speedHeader, time, timeRange,
+  facts, dateLong, dateRow, dayMonth, duration, fixed1, fromDisplaySpeed, fromDisplayWeight, monthLabel, num, plural, speedHeader, time, timeRange,
   toDisplaySpeed, toDisplayWeight, uid, volume, weightUnit, withTime, wu,
 } from '../format';
 import type { Session } from '../types';
@@ -46,7 +46,7 @@ export function HistoryList() {
                 return (
                   <Row
                     key={s.id} to={`/history/${s.id}`} chevron title={sessionName(d, s)} badge={prs > 0 ? <PRPill count={prs} /> : undefined}
-                    sub={`${dateRow(s.startTime)} · ${duration(sessionDuration(s))}`}
+                    sub={facts(dateRow(s.startTime), duration(sessionDuration(s)))}
                   />
                 );
               })}
@@ -105,7 +105,7 @@ export function SessionDetail() {
               {prs.map((p) => (
                 <Row
                   key={`${p.exerciseId}${p.type}`} title={exerciseById(d, p.exerciseId)?.name ?? ''}
-                  sub={p.type === 'heaviest' ? `${wu(p.value, u)} · heaviest` : `${p.value} reps · most reps`}
+                  sub={p.type === 'heaviest' ? facts(wu(p.value, u), 'heaviest') : facts(`${p.value} reps`, 'most reps')}
                   trail={<PRPill />}
                 />
               ))}

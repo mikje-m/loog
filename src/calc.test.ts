@@ -3,7 +3,7 @@ import type { AppData, Session } from './types';
 import {
   allPRs, chartBars, goalCurrent, heaviestFor, lastTimeText, loggedText, seedSets, sessionVolume, suggestedWorkout, syncGoals, targetsText,
 } from './calc';
-import { dateLong, dateRow, dayMonth, int, lastDone, monthLabel, num, sp, volume, w } from './format';
+import { SEP, dateLong, dateRow, dayMonth, int, lastDone, monthLabel, num, sp, volume, w } from './format';
 
 const DAY = 86_400_000;
 const t0 = new Date(2026, 8, 1, 18, 4).getTime();
@@ -113,12 +113,33 @@ describe('calculations', () => {
   it('writes the copy lines', () => {
     const d = base();
     d.sessions = [session('a', 0, 'push', [[12, 70], [10, 70], [8, 70]]), session('b', 7, 'push', [[12, 75]])];
-    expect(lastTimeText(d, 'bench', false, 'kg_kmh')).toBe('Last time: 12 · 75 kg · PR 75');
+    expect(lastTimeText(d, 'bench', false, 'kg_kmh')).toBe(`Last time: 12${SEP}75 kg${SEP}PR 75`);
     d.sessions.push(session('c', 9, 'push', [[12, 70], [10, 70], [8, 70]]));
-    expect(lastTimeText(d, 'bench', false, 'kg_kmh')).toBe('Last time: 12/10/8 · 70 kg · PR 75');
-    expect(loggedText([{ id: 'x', reps: 12, weight: 100, completed: true }, { id: 'y', reps: 10, weight: 100, completed: true }], false, 'kg_kmh')).toBe('12 · 10 · 100 kg');
-    expect(targetsText(d.exercises[1], [{ duration: 10, speed: 6 }], 'kg_kmh')).toBe('10 min · 6,0 km/h');
+    expect(lastTimeText(d, 'bench', false, 'kg_kmh')).toBe(`Last time: 12/10/8${SEP}70 kg${SEP}PR 75`);
+    expect(loggedText([{ id: 'x', reps: 12, weight: 100, completed: true }, { id: 'y', reps: 10, weight: 100, completed: true }], false, 'kg_kmh')).toBe(`12-10${SEP}100 kg`);
+    expect(targetsText(d.exercises[1], [{ duration: 10, speed: 6 }], 'kg_kmh')).toBe(`10 min${SEP}6,0 km/h`);
     expect(heaviestFor(d, 'bench')).toMatchObject({ weight: 75, reps: 12 });
+  });
+
+  it('starts with default reps (never empty) for an exercise with no history and no target', () => {
+    const d = base();
+    const sets = seedSets(d, d.exercises[0], undefined, 1);
+    expect(sets).toHaveLength(1);
+    expect(sets[0].reps).toBe(10);
+    expect(sets[0].weight).toBeUndefined();
+    const cardio = seedSets(d, d.exercises[1], undefined, 1)[0];
+    expect([cardio.duration, cardio.speed]).toEqual([10, 6]);
+  });
+
+  it('no middle dots appear in any generated text', () => {
+    const d = base();
+    d.sessions = [session('a', 0, 'push', [[12, 70], [10, 70]])];
+    const texts = [
+      targetsText(d.exercises[0], [{ reps: 12 }, { reps: 10 }], 'kg_kmh'),
+      loggedText(d.sessions[0].exercises[0].sets, false, 'kg_kmh'),
+      lastTimeText(d, 'bench', false, 'kg_kmh') ?? '',
+    ];
+    for (const x of texts) expect(x).not.toContain('·');
   });
 
   it('builds one bar per month including empty months', () => {

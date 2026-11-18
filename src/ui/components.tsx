@@ -1,6 +1,6 @@
 // The Loog component set (handoff section 3), built once with variants.
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useBlocker, useLocation, useNavigate } from 'react-router-dom';
 import { Icon, type IconName } from './Icon';
 import { editNum, parseNum } from '../format';
 
@@ -257,7 +257,12 @@ export function NumberField({ value, onChange, decimal, label }: { value: number
       className="ft-num" aria-label={label} inputMode={decimal ? 'decimal' : 'numeric'}
       value={text ?? editNum(value)}
       onFocus={(e) => { setText(editNum(value)); e.currentTarget.select(); }}
-      onChange={(e) => setText(e.target.value)}
+      onChange={(e) => {
+        // Counts straight away (not only when you leave the field), so Log works right after typing.
+        setText(e.target.value);
+        const n = parseNum(e.target.value);
+        if (n != null) onChange(Math.max(0, n));
+      }}
       onBlur={(e) => { const n = parseNum(e.target.value); onChange(n == null ? undefined : Math.max(0, n)); setText(null); }}
       onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
     />
@@ -297,7 +302,12 @@ export function Stepper({ value, onChange, step, suggested, decimal, min = 0, la
         value={text ?? (value == null ? '' : format(value))}
         placeholder="–"
         onFocus={(e) => { setText(editNum(value)); requestAnimationFrame(() => e.target.select()); }}
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e) => {
+          // Counts straight away (not only when you leave the field), so Log works right after typing.
+          setText(e.target.value);
+          const n = parseNum(e.target.value);
+          if (n != null) onChange(Math.max(min, round(n)));
+        }}
         onBlur={(e) => commit(e.target.value)}
         onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur(); }}
       />
@@ -352,7 +362,7 @@ export function ProgressRing({ done, total }: { done: number; total: number }) {
   return (
     <div className="ft-ring" role="img" aria-label={`${done} of ${total} exercises done`}>
       <svg width="56" height="56" viewBox="0 0 56 56">
-        <circle cx="28" cy="28" r={r} fill="none" stroke="var(--pink-soft)" strokeWidth="5" />
+        <circle cx="28" cy="28" r={r} fill="none" stroke="var(--ring-track)" strokeWidth="5" />
         {frac > 0 && (
           <circle className="ft-ring__fill" cx="28" cy="28" r={r} fill="none" stroke="var(--pink)" strokeWidth="5" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - frac)} />
         )}
@@ -426,8 +436,20 @@ function useEscape(onClose: () => void) {
   }, [onClose]);
 }
 
+/** The system Back button (Android back, Samsung back gesture) closes an open dialog or sheet instead of leaving the screen. */
+function useBackToClose(onClose: () => void) {
+  const blocker = useBlocker(({ historyAction }) => historyAction === 'POP');
+  useEffect(() => {
+    if (blocker.state === 'blocked') {
+      blocker.reset();
+      onClose();
+    }
+  }, [blocker, onClose]);
+}
+
 export function Dialog({ title, text, onClose, children }: { title: string; text: string; onClose: () => void; children: ReactNode }) {
   useEscape(onClose);
+  useBackToClose(onClose);
   return (
     <div className="ft-scrim" onClick={onClose}>
       <div className="ft-dialog" role="alertdialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
@@ -442,6 +464,7 @@ export function Dialog({ title, text, onClose, children }: { title: string; text
 /** Pull-up sheet. Close by tapping the scrim or dragging it down *(assumed)*. */
 export function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
   useEscape(onClose);
+  useBackToClose(onClose);
   const startY = useRef<number | null>(null);
   const [dy, setDy] = useState(0);
   return (

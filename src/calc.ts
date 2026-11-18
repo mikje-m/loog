@@ -1,6 +1,6 @@
 // Everything derived (handoff 5.3 rule 2 and section 6). Nothing here is stored.
 import type { AppData, Exercise, Goal, LoggedExercise, PlannedSet, PR, SetEntry, Session, Units, Workout } from './types';
-import { isoDay, num, sp, speedUnit, uid, w, weightUnit } from './format';
+import { facts, isoDay, num, repList, sp, speedUnit, uid, w, weightUnit } from './format';
 
 export const exerciseById = (d: AppData, id: string) => d.exercises.find((e) => e.id === id);
 export const workoutById = (d: AppData, id: string) => d.workouts.find((x) => x.id === id);
@@ -167,15 +167,25 @@ export function exerciseImpact(d: AppData, exerciseId: string) {
 
 // ---- Live session seeding -----------------------------------------------------------------
 
-/** Suggested values: from the last session of this exercise, or from the targets the first time. */
+/** *(assumed)* Starting suggestions when there is neither history nor a target (an exercise added mid-workout). */
+export const DEFAULT_REPS = 10;
+export const DEFAULT_MINUTES = 10;
+export const DEFAULT_SPEED = 6;
+
+/**
+ * Suggested values: from the last session of this exercise, or from the targets the first time.
+ * With neither, reps (or minutes and speed) start at a default so they are never empty. Weight stays empty.
+ */
 export function seedSets(d: AppData, ex: Exercise, planned: PlannedSet[] | undefined, count?: number): SetEntry[] {
   const last = lastFor(d, ex.id)?.logged;
   const n = count ?? (planned?.length ? planned.length : last?.sets.length || 1);
   return Array.from({ length: n }, (_, i) => {
     const p = planned?.length ? planned[Math.min(i, planned.length - 1)] : undefined;
     const l = last?.sets.length ? last.sets[Math.min(i, last.sets.length - 1)] : undefined;
-    if (ex.isCardio) return { id: uid(), duration: l?.duration ?? p?.duration, speed: l?.speed ?? p?.speed, completed: false };
-    return { id: uid(), reps: l?.reps ?? p?.reps, weight: l?.weight, completed: false };
+    if (ex.isCardio) {
+      return { id: uid(), duration: l?.duration ?? p?.duration ?? DEFAULT_MINUTES, speed: l?.speed ?? p?.speed ?? DEFAULT_SPEED, completed: false };
+    }
+    return { id: uid(), reps: l?.reps ?? p?.reps ?? DEFAULT_REPS, weight: l?.weight, completed: false };
   });
 }
 
@@ -190,30 +200,30 @@ export const topWeight = (sets: SetEntry[]) => {
   return ws.length ? Math.max(...ws) : undefined;
 };
 
-/** Targets: "12 · 10 · 8 reps" or "10 min · 6,0 km/h". */
+/** Targets: "12-10-8 reps" or "10 min  6,0 km/h" (whitespace between facts, no dots). */
 export function targetsText(ex: Exercise | undefined, sets: PlannedSet[], u: Units): string {
   if (!ex) return '';
   if (ex.isCardio) {
     const p = sets[0];
-    return p ? `${num(p.duration ?? 0)} min · ${sp(p.speed ?? 0, u)} ${speedUnit(u)}` : '';
+    return p ? facts(`${num(p.duration ?? 0)} min`, `${sp(p.speed ?? 0, u)} ${speedUnit(u)}`) : '';
   }
-  return `${sets.map((s) => s.reps ?? 0).join(' · ')} reps`;
+  return `${repList(sets.map((s) => s.reps ?? 0))} reps`;
 }
 
-/** Logged: "12 · 10 · 8 · 100 kg" or "10 min · 6,0 km/h". The weight is the top weight. */
+/** Logged: "12-10-8  100 kg" or "10 min  6,0 km/h". The weight is the top weight. */
 export function loggedText(sets: SetEntry[], cardio: boolean, u: Units): string {
   if (cardio) {
     const s = sets[0];
     if (!s) return '';
-    return `${num(s.duration ?? 0)} min · ${sp(s.speed ?? 0, u)} ${speedUnit(u)}`;
+    return facts(`${num(s.duration ?? 0)} min`, `${sp(s.speed ?? 0, u)} ${speedUnit(u)}`);
   }
-  const reps = sets.map((s) => s.reps ?? 0).join(' · ');
+  const reps = repList(sets.map((s) => s.reps ?? 0));
   const top = topWeight(sets);
-  return top != null ? `${reps} · ${w(top, u)} ${weightUnit(u)}` : reps;
+  return top != null ? facts(reps, `${w(top, u)} ${weightUnit(u)}`) : reps;
 }
 
 /**
- * "Last time: 12/10/8 · 70 kg · PR 75".
+ * "Last time: 12/10/8  70 kg  PR 75".
  * TODO(Mike): open question 26 — when the sets had different weights the top weight is shown.
  * TODO(Mike): open question 12 — returns undefined (line hidden) the first time.
  */
@@ -222,12 +232,13 @@ export function lastTimeText(d: AppData, exerciseId: string, cardio: boolean, u:
   if (!last) return undefined;
   const sets = last.logged.sets;
   if (cardio) return `Last time: ${loggedText(sets, true, u)}`;
-  const parts = [sets.map((s) => s.reps ?? 0).join('/')];
   const top = topWeight(sets);
-  if (top != null) parts.push(`${w(top, u)} ${weightUnit(u)}`);
   const pr = heaviestFor(d, exerciseId);
-  if (pr) parts.push(`PR ${w(pr.weight, u)}`);
-  return `Last time: ${parts.join(' · ')}`;
+  return `Last time: ${facts(
+    sets.map((s) => s.reps ?? 0).join('/'),
+    top != null && `${w(top, u)} ${weightUnit(u)}`,
+    pr && `PR ${w(pr.weight, u)}`,
+  )}`;
 }
 
 /** To do rows: target reps + the weight from the last session *(assumed, open question 24)*. */
@@ -240,11 +251,9 @@ export function todoText(d: AppData, s: Session, e: LoggedExercise, u: Units): s
     return targetsText(ex, [p], u);
   }
   const reps = item ? item.sets.map((p) => p.reps ?? 0) : e.sets.map((x) => x.reps ?? 0);
-  const parts = [`${reps.join(' · ')} reps`];
   const last = lastFor(d, ex.id);
   const top = last ? topWeight(last.logged.sets) : undefined;
-  if (top != null) parts.push(`${w(top, u)} ${weightUnit(u)}`);
-  return parts.join(' · ');
+  return facts(`${repList(reps)} reps`, top != null && `${w(top, u)} ${weightUnit(u)}`);
 }
 
 // ---- Year overview -------------------------------------------------------------------------

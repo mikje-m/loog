@@ -4,7 +4,7 @@ import { discardSession, startWorkout, useData } from '../store';
 import {
   finishedDesc, lastPerformed, loggedExercises, openSession, prsForSession, sessionName, sortedWorkouts, suggestedWorkout, yearStats,
 } from '../calc';
-import { agoShort, dateRow, isoDay, lastDone, minutesAgo, plural, time, timeRange } from '../format';
+import { agoShort, dateRow, facts, isoDay, lastDone, minutesAgo, plural, time, timeRange } from '../format';
 import { Icon } from '../ui/Icon';
 import {
   Button, Chip, Dialog, EmptyState, Header, IconButton, ListCard, Main, Pinned, PlayButton, PRPill, ProgressBar, Row, Section,
@@ -89,7 +89,7 @@ export default function Home() {
                   <span className="hero__name">{sessionName(d, open)}</span>
                   <Chip hero>{open.exercises.filter((e) => e.state !== 'todo').length}/{exercisesCount(open.exercises.length)}</Chip>
                 </div>
-                <span className="hero__sub">Started {time(open.startTime)} · {minutesAgo(open.startTime)}</span>
+                <span className="hero__sub">Started {time(open.startTime)} - {minutesAgo(open.startTime)}</span>
               </div>
               <ProgressBar
                 label="Exercises done"
@@ -128,7 +128,7 @@ export default function Home() {
                 return (
                   <Row
                     key={x.id} pick title={x.name}
-                    sub={t != null ? `${exercisesCount(x.items.length)} · ${agoShort(t)}` : exercisesCount(x.items.length)}
+                    sub={t != null ? facts(exercisesCount(x.items.length), agoShort(t)) : exercisesCount(x.items.length)}
                     trail={<PlayButton label={`Start ${x.name}`} onClick={() => start(x.id)} />}
                   />
                 );
