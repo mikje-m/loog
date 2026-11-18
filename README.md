@@ -2,7 +2,9 @@
 
 A free, offline, fully customizable workout tracker. Build your own exercises and workouts, log sets fast between sets, and see whether you are getting stronger. No account, no server, no paywall.
 
-**Use it:** open https://mikje-m.github.io/loog/ on your phone and choose *Add to Home screen*. Everyone who opens the link gets their own private copy: all data stays in that phone's browser storage (IndexedDB). Settings → Export / Import moves it to another device.
+**Android app:** download the APK from https://github.com/mikje-m/loog/releases/latest (see [docs/android.md](docs/android.md)).
+
+**Web version:** open https://mikje-m.github.io/loog/ on your phone and choose *Add to Home screen*. Everyone who opens the link gets their own private copy: all data stays in that phone's browser storage (IndexedDB). Settings → Export / Import moves it to another device.
 
 The spec is [`docs/loog-handoff.md`](docs/loog-handoff.md), with the design tokens and the 62 approved reference screens in `docs/`.
 

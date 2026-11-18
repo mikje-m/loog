@@ -2,7 +2,8 @@
 // written straight away, so a dead battery never costs an exercise (handoff 8.4).
 import Dexie, { type Table } from 'dexie';
 import { produce } from 'immer';
-import { Capacitor, SystemBars, SystemBarsStyle } from '@capacitor/core';
+import { SystemBars, SystemBarsStyle } from '@capacitor/core';
+import { LoogNative, isNative } from './native';
 import { useSyncExternalStore } from 'react';
 import type {
   AppData, Exercise, Goal, LoggedExercise, PlannedSet, SetEntry, SetField, Session, Settings, Theme, Units, Workout,
@@ -52,9 +53,11 @@ export function applyTheme(theme: Theme) {
   const bg = getComputedStyle(root).getPropertyValue('--bg').trim();
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bg || '#0f0a0c');
   // In the Android app the status and navigation bar icons follow the theme (light icons on dark, dark on light).
-  if (Capacitor.isNativePlatform()) {
+  if (isNative()) {
     const dark = theme === 'dark' || (theme === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
     void SystemBars.setStyle({ style: dark ? SystemBarsStyle.Dark : SystemBarsStyle.Light }).catch(() => {});
+    // The window behind the status and navigation bars takes the page colour, so there is no band.
+    void LoogNative.setWindowColor({ color: bg || '#0f0a0c' }).catch(() => {});
   }
 }
 

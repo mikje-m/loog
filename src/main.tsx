@@ -6,11 +6,14 @@ import './styles/app.css';
 import App from './App';
 import { applyTheme, getData, importJSON, loadData } from './store';
 import { Capacitor } from '@capacitor/core';
+import { detectPaddedWebView } from './native';
 import { registerSW } from 'virtual:pwa-register';
 
 // The service worker is for the web version; the Android app already ships all files inside itself.
 if (!Capacitor.isNativePlatform()) registerSW({ immediate: true });
 void loadData();
+
+void detectPaddedWebView();
 
 // Development only: lets tests load a backup without the file picker.
 if (import.meta.env.DEV) (window as unknown as { __loogImport: typeof importJSON }).__loogImport = importJSON;
